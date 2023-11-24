@@ -107,7 +107,7 @@ public class GUI {
         //sự kiện
         btnSend.addActionListener(new ClickSend());
         btnReset.addActionListener(new ClickReset());
-        textField.addKeyListener(new PressEnterr());
+        textField.addKeyListener(new PressEnter());
         menu11.addActionListener(new OpenFile());
 
         //Save as: ghi ra một file gì đó
@@ -142,6 +142,7 @@ public class GUI {
             //tạo 1 label rỗng
 //            tmp.setText(textField.getText());
 //            JOptionPane.showMessageDialog(null, tmp.getText());
+            btnReset.setEnabled(true);
             String time = getDateTime();
             textArea.append(textField.getText() + " Sended at: " + time + "\n");
             textField.setText("");
@@ -155,13 +156,20 @@ public class GUI {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            textArea.setText("");
-            textField.setText("");
+            //xóa đi trạng thái clickable của nut Reset
+            if (!textArea.getText().equals("") || !textField.getText().equals("")) {
+
+                textArea.setText("");
+                textField.setText("");
+            } else {
+                btnReset.setEnabled(false);
+                JOptionPane.showMessageDialog(null, "Nothing to reset");
+            }
         }
 
     }
 
-    private class PressEnterr implements KeyListener {
+    private class PressEnter implements KeyListener {
 
         @Override
         public void keyTyped(KeyEvent e) {
@@ -227,6 +235,7 @@ public class GUI {
                     tmp = readFile(url);
 //                        JOptionPane.showMessageDialog(null, "File Read Successfully");
                     textArea.append(tmp);
+                    btnReset.setEnabled(true);
                 } catch (Exception ex) {
                     System.out.println("File loi roi");
                 }
