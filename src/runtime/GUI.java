@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
- */
 package runtime;
 
 //Usually you will require both swing and awt packages
@@ -25,8 +21,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class GUI {
 
@@ -40,8 +34,8 @@ public class GUI {
     private JButton btnSend, btnReset;
     private JTextArea textArea; //khung giữa
 
-    String tmp = ""; //hứng giá trị từ file
-    String url = "";
+    private String tmp = ""; //hứng giá trị từ file
+    private String url = "";
 
     public GUI() {
         //Creating the Frame
@@ -72,21 +66,20 @@ public class GUI {
         menu2.add(menu22); //Help -> About me
 
         //Creating the panel at bottom and adding components
-//        panel = new JPanel(); // the panel is not visible in output
         panel = new JPanel(new FlowLayout()); //nên áp cái layout của nó từ đầu, dễ kiểm soát hơn
+        //FlowLayout là trình quản lý bố cục mặc định cho mọi JPanel. Nó lần lượt đưa ra các thành phần trong một hàng duy nhất.
 
         label = new JLabel("Enter Text");
 
-        textField = new JTextField(15); // accepts upto 10 characters
+        textField = new JTextField(10); // accepts upto 10 characters
 
         btnSend = new JButton("Send");
 
         btnReset = new JButton("Reset");
 
         panel.add(label); // Components Added using Flow Layout
-        //FlowLayout là trình quản lý bố cục mặc định cho mọi JPanel. Nó lần lượt đưa ra các thành phần trong một hàng duy nhất.
 
-        panel.add(textField); //text field
+        panel.add(textField);
 
         panel.add(btnSend);
 
@@ -119,7 +112,6 @@ public class GUI {
         //---------------------------------------------------------------------------------------------------------
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(400, 400);
-//        frame.setMinimumSize(frame.getSize());
         frame.setPreferredSize(frame.getSize());
         frame.pack();
         frame.setVisible(true);
@@ -146,8 +138,6 @@ public class GUI {
             String time = getDateTime();
             textArea.append(textField.getText() + " Sended at: " + time + "\n");
             textField.setText("");
-
-//            System.out.println(tmp.getText());
         }
 
     }
@@ -157,10 +147,9 @@ public class GUI {
         @Override
         public void actionPerformed(ActionEvent e) {
             //xóa đi trạng thái clickable của nut Reset
-            if (!textArea.getText().equals("") || !textField.getText().equals("")) {
+            if (!textArea.getText().equals("")) {
 
                 textArea.setText("");
-                textField.setText("");
             } else {
                 btnReset.setEnabled(false);
                 JOptionPane.showMessageDialog(null, "Nothing to reset");
@@ -173,6 +162,7 @@ public class GUI {
 
         @Override
         public void keyTyped(KeyEvent e) {
+            btnReset.setEnabled(true);
         }
 
         @Override
@@ -180,7 +170,8 @@ public class GUI {
 //            System.out.println("Key pressed code=" + e.getKeyCode() + ", char=" + e.getKeyChar());
             //\n code = 10
             if (e.getKeyCode() == 10) {
-                textArea.append(textField.getText() + "\n");
+                String time = getDateTime();
+                textArea.append(textField.getText() + " Sended at: " + time + "\n");
                 textField.setText("");
             }
         }
@@ -202,7 +193,6 @@ public class GUI {
 
             int returnValue = fileChooser.showOpenDialog(null);
 
-            File f = fileChooser.getSelectedFile();
 //                if (returnValue == JFileChooser.APPROVE_OPTION) {
 //                    File selectedFile = fileChooser.getSelectedFile();
 //                    System.out.println(java.awt.Desktop.getDesktop().toString());
@@ -214,7 +204,6 @@ public class GUI {
 ////                    }
 //                }
 //                System.out.println(chooser.getDescription(f)); //trả ra tên ok //xíu xử lí lỗi chỗ này
-
 //                if (f.getName().contains("txt")) {
 //                    try {
 //                        //tạo 1 hàm đọc file và in ra console
@@ -227,8 +216,6 @@ public class GUI {
             if (returnValue == JFileChooser.APPROVE_OPTION) {
                 File selectedFile = fileChooser.getSelectedFile();
                 url = selectedFile.getAbsolutePath();
-//                    JOptionPane.showMessageDialog(null, "Selected file: " + url);
-                System.out.println("Selected file: " + url);
 
                 try {
                     System.out.println("File Content: ");
@@ -277,14 +264,10 @@ public class GUI {
 
             return false;
         }
-        System.out.println("Demo in url");
-        System.out.println(this.url);
-        System.out.println(url);
         BufferedReader bufferedReader = null;
         BufferedWriter bufferedWriter = null;
-        String tmp = "";
 
-        String urlOut = "D:\\PERSONAL\\java\\GUI\\03-ChatFrame\\src\\output\\test.txt";
+        String urlOut = "D:\\PERSONAL\\java\\GUI\\03-ChatFrame\\src\\output\\openFile.txt";
         try {
             Reader reader = new FileReader(new File(url));
             bufferedReader = new BufferedReader(reader);
@@ -313,6 +296,7 @@ public class GUI {
         }
     }
 
+    //hành động write file này khi ta nhập thông tin vào textField và nhấn send
     private boolean writeFile() throws IOException {
         String str = textArea.getText();
 
@@ -325,7 +309,7 @@ public class GUI {
         BufferedReader bufferedReader = null;
         BufferedWriter bufferedWriter = null;
 
-        String urlOut = "D:\\PERSONAL\\java\\GUI\\03-ChatFrame\\src\\output\\contentFromTextArea.txt";
+        String urlOut = "D:\\PERSONAL\\java\\GUI\\03-ChatFrame\\src\\output\\pressSend.txt";
 
         try {
 
@@ -370,26 +354,24 @@ public class GUI {
         public void actionPerformed(ActionEvent e) {
             try {
                 String path = url;
-                boolean ta = textArea.getText().equals(""); //file này trống
-                boolean pa = path.equals(""); //path này trống
-                if (ta && pa) {
+                boolean isNotTextArea = textArea.getText().equals(""); //file này trống
+                boolean isNotPath = path.equals(""); //path này trống
+                if (isNotTextArea && isNotPath) {
                     JOptionPane.showMessageDialog(null, "You need to Open File or Enter Text first!");
                     //có 2 trường hợp, 1 là phải open file - 2 là viết gì đó vô
-                } else {
-                    if (!ta) {
-                        writeFile();
-                    }
-                    if (!pa) {
-                        writeFile(path);
-                    }
-                    JOptionPane.showMessageDialog(null, "File Writed Successfull!");
+                } else if (isNotPath && !isNotTextArea) {
+                    //nếu ta đọc file thì cũng quăng vô ta ->
+                    //send -> quăng vô ta, nó sẽ bắt thằng này trước -> không ổn
+                    //cách khác để xét: khi send ta không có url, và open file thì sẽ có url để identifier
+                    writeFile();
+                } else if (!isNotPath && !isNotTextArea) {
+                    writeFile(path);
                 }
 
-            } catch (IOException ex) {
+            } catch (IOException ie) {
                 System.out.println("Loi ghi file o Save File");
             }
 
-//            System.out.println("Test Save FIle");
         }
 
     }
@@ -398,7 +380,10 @@ public class GUI {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            JOptionPane.showMessageDialog(null, "SIMPLE CHAT FRAME\nAuthor: lcaohoanq\nContact me(via)\nGithub: https://github.com/lcaohoanq");
+            JOptionPane.showMessageDialog(null, "SIMPLE CHAT FRAME\n"
+                    + "This is my first simple project when learning Java Swing, hope you guys enjoy ^^\n"
+                    + "Author: lcaohoanq\n"
+                    + "Github: https://github.com/lcaohoanq");
         }
     }
 
@@ -407,7 +392,3 @@ public class GUI {
     }
 
 }
-
-//open là mở một file text txt
-//save as là ghi ra một file text txt =))) 
-//rồi config lại hàm cho gọn, đặt tên ok 
