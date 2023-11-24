@@ -21,6 +21,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.Writer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -91,6 +95,7 @@ public class GUI {
         // Text Area at the Center
         textArea = new JTextArea();
         JScrollPane scrollPane = new JScrollPane(textArea);
+        textArea.setEditable(false); //make read-only JTextArea
 
         //Adding Components to the frame.
         frame.getContentPane().add(BorderLayout.SOUTH, panel); //bottom chứa panel: textField, btnSend, btnReset
@@ -120,6 +125,15 @@ public class GUI {
         frame.setVisible(true);
     }
 
+    private String getDateTime() {
+        TimeZone tz = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
+        DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // Quoted "Z" to indicate UTC, no timezone offset
+        df.setTimeZone(tz);
+        String nowAsISO = df.format(new Date());
+
+        return nowAsISO;
+    }
+
     //bấm send là trên app sẽ in ra dòng mình nhập trong textField
     private class ClickSend implements ActionListener {
 
@@ -128,8 +142,8 @@ public class GUI {
             //tạo 1 label rỗng
 //            tmp.setText(textField.getText());
 //            JOptionPane.showMessageDialog(null, tmp.getText());
-
-            textArea.append(textField.getText() + "\n");
+            String time = getDateTime();
+            textArea.append(textField.getText() + " Sended at: " + time + "\n");
             textField.setText("");
 
 //            System.out.println(tmp.getText());
@@ -275,7 +289,7 @@ public class GUI {
             }
 
             writer.flush();//đợi save xong mới đóng
-            JOptionPane.showMessageDialog(null, "File Writed Successfull At: "+urlOut);
+            JOptionPane.showMessageDialog(null, "File Writed Successfull At: " + urlOut);
             return true;
         } catch (Exception e) {
             System.out.println("Loi save file" + e);
@@ -320,7 +334,7 @@ public class GUI {
                 writer.write("\n");
             }
             writer.flush();//đợi save xong mới đóng
-            JOptionPane.showMessageDialog(null, "File Writed Successfull At: " +urlOut);
+            JOptionPane.showMessageDialog(null, "File Writed Successfull At: " + urlOut);
             return true;
         } catch (Exception e) {
             System.out.println("Loi doc content Text Area");
@@ -355,9 +369,10 @@ public class GUI {
                 } else {
                     if (!ta) {
                         writeFile();
-                    }if(!pa){
+                    }
+                    if (!pa) {
                         writeFile(path);
-                    } 
+                    }
                     JOptionPane.showMessageDialog(null, "File Writed Successfull!");
                 }
 
